@@ -1,5 +1,5 @@
 import { Address, toNano } from '@ton/core';
-import { Sample } from '../wrappers/Sample';
+import { Sample } from '../wrappers/jetton-minter';
 import { NetworkProvider, sleep } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider, args: string[]) {

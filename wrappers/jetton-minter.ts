@@ -1,29 +1,38 @@
 import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
 
-export type SampleConfig = {
-    id: number;
-    counter: number;
+export type MinterConfig = {
+    total_supply: bigint;
+    admin_address: Address;
+    next_admin_address: Address;
+    jetton_wallet_code: Cell;
+    metadata_url: Cell;
 };
 
-export function sampleConfigToCell(config: SampleConfig): Cell {
-    return beginCell().storeUint(config.id, 32).storeUint(config.counter, 32).endCell();
+export function minterConfigToCell(config: MinterConfig): Cell {
+    return beginCell()
+        .storeCoins(config.total_supply)
+        .storeAddress(config.admin_address)
+        .storeAddress(config.next_admin_address)
+        .storeRef(config.jetton_wallet_code)
+        .storeRef(config.metadata_url)
+    .endCell();
 }
 
 export const Opcodes = {
     increase: 0x7e8764ef,
 };
 
-export class Sample implements Contract {
+export class Minter implements Contract {
     constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
 
     static createFromAddress(address: Address) {
-        return new Sample(address);
+        return new Minter(address);
     }
 
-    static createFromConfig(config: SampleConfig, code: Cell, workchain = 0) {
-        const data = sampleConfigToCell(config);
+    static createFromConfig(config: MinterConfig, code: Cell, workchain = 0) {
+        const data = minterConfigToCell(config);
         const init = { code, data };
-        return new Sample(contractAddress(workchain, init), init);
+        return new Minter(contractAddress(workchain, init), init);
     }
 
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {

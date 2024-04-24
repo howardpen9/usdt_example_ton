@@ -1,5 +1,5 @@
 import { toNano } from '@ton/core';
-import { Sample } from '../wrappers/Sample';
+import { Sample } from '../wrappers/jetton-minter';
 import { compile, NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
