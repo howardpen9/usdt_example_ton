@@ -197,6 +197,9 @@
     save_data(status, balance + jetton_amount, owner_address, jetton_master_address);
 }
 
+{- 
+    --- Main ---
+-}
 () recv_internal(int my_ton_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice in_msg_full_slice = in_msg_full.begin_parse();
     int msg_flags = in_msg_full_slice~load_msg_flags();
@@ -238,7 +241,7 @@
 
         (_, int balance, slice owner_address, slice jetton_master_address) = load_data();
         throw_unless(error::not_valid_wallet, equal_slices_bits(sender_address, jetton_master_address));
-        
+
         save_data(new_status, balance, owner_address, jetton_master_address);
         return ();
     }

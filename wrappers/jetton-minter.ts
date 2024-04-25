@@ -1,4 +1,4 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
+import { TupleBuilder, Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
 
 export type MinterConfig = {
     total_supply: bigint;
@@ -19,7 +19,9 @@ export function minterConfigToCell(config: MinterConfig): Cell {
 }
 
 export const Opcodes = {
-    increase: 0x7e8764ef,
+    mint: 0x642b7d07,
+    burn_notification: 0x7bdd97de,
+    // increase: 0x7e8764ef,
 };
 
 export class Minter implements Contract {
@@ -43,33 +45,66 @@ export class Minter implements Contract {
         });
     }
 
-    async sendIncrease(
+    async sendMint(
         provider: ContractProvider,
         via: Sender,
         opts: {
-            increaseBy: number;
-            value: bigint;
+            value: bigint | string
             queryID?: number;
+            toAddress: Address;
+            tonAmount: bigint;
+            master_msg: Cell;
         }
     ) {
         await provider.internal(via, {
             value: opts.value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell()
-                .storeUint(Opcodes.increase, 32)
-                .storeUint(opts.queryID ?? 0, 64)
-                .storeUint(opts.increaseBy, 32)
+                    .storeUint(Opcodes.mint, 32)
+                    .storeUint(opts.queryID ?? 0, 64)
+                    .storeAddress(opts.toAddress)
+                    .storeCoins(opts.tonAmount)
+                    .storeRef(opts.master_msg)
                 .endCell(),
         });
     }
 
-    async getCounter(provider: ContractProvider) {
-        const result = await provider.get('get_counter', []);
-        return result.stack.readNumber();
+    // async getCounter(provider: ContractProvider) {
+    //     const result = await provider.get('get_counter', []);
+    //     return result.stack.readNumber();
+    // }
+
+    // async getID(provider: ContractProvider) {
+    //     const result = await provider.get('get_id', []);
+    //     return result.stack.readNumber();
+    // }
+
+
+    async getJettonData(provider: ContractProvider): Promise<[bigint, boolean, Address, Cell, Cell]> {
+        const { stack } = await provider.get('get_jetton_data', [])
+        return [
+            stack.readBigNumber(), 
+            stack.readBoolean(), 
+            stack.readAddress(), 
+            stack.readCell(), 
+            stack.readCell()
+        ]
     }
 
-    async getID(provider: ContractProvider) {
-        const result = await provider.get('get_id', []);
-        return result.stack.readNumber();
+    async getWalletAddress(provider: ContractProvider, owner: Address): Promise<Address> {
+        const tb = new TupleBuilder()
+        tb.writeAddress(owner)
+        const { stack } = await provider.get('get_wallet_address', tb.build())
+        return stack.readAddress()
+    }
+
+    async getBalance(provider: ContractProvider): Promise<bigint> {
+        const state = await provider.getState()
+        return state.balance
+    }
+
+    async getNextAdminAddress(provider: ContractProvider) {
+        const result = await provider.get('get_next_admin_address', []);
+        return result.stack.readAddress();
     }
 }

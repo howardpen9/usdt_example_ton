@@ -21,6 +21,7 @@
         "typescript": "^5.3.2"
     },
     "dependencies": {
+        "@aws-crypto/sha256-js": "^5.2.0",
         "@ton/blueprint": "^0.19.1"
     }
 }

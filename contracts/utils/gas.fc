@@ -88,5 +88,11 @@ int forward_init_state_overhead() inline {
     int jetton_wallet_gas_consumption = get_precompiled_gas_consumption();
     int send_burn_gas_consumption = null?(jetton_wallet_gas_consumption) ? SEND_BURN_GAS_CONSUMPTION : jetton_wallet_gas_consumption;
 
-    throw_unless(error::not_enough_gas, msg_value > get_forward_fee(MY_WORKCHAIN, BURN_NOTIFICATION_BITS, BURN_NOTIFICATION_CELLS) + get_compute_fee(MY_WORKCHAIN, send_burn_gas_consumption) + get_compute_fee(MY_WORKCHAIN, RECEIVE_BURN_GAS_CONSUMPTION));
+    throw_unless(error::not_enough_gas, msg_value > 
+        get_forward_fee(MY_WORKCHAIN, BURN_NOTIFICATION_BITS, BURN_NOTIFICATION_CELLS) 
+        + get_compute_fee(MY_WORKCHAIN, send_burn_gas_consumption) 
+        + get_compute_fee(MY_WORKCHAIN, RECEIVE_BURN_GAS_CONSUMPTION)
+    );
+    ;; ~dump( get_compute_fee(MY_WORKCHAIN, send_burn_gas_consumption) );
+    ;; ~dump( get_compute_fee(MY_WORKCHAIN, RECEIVE_BURN_GAS_CONSUMPTION));
 }
