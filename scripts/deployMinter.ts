@@ -48,7 +48,7 @@ export async function run(provider: NetworkProvider) {
         value: toNano('1.5'),
         queryID: 10,
         toAddress: provider.sender().address!!,
-        tonAmount: toNano('0.8'),
+        tonAmount: toNano('0.5'),
         master_msg: master_msg
     } )
 

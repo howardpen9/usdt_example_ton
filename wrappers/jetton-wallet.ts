@@ -1,20 +1,16 @@
-import { TupleBuilder, Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
+import { TupleBuilder, Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, ADNLAddress } from '@ton/core';
 
 export type walletConfig = {
-    total_supply: bigint;
-    admin_address: Address;
-    next_admin_address: Address;
-    jetton_wallet_code: Cell;
-    metadata_url: Cell;
+    owner_address: Address;
+    jetton_master_address: Address;
 };
 
 export function walletConfigToCell(config: walletConfig): Cell {
     return beginCell()
-        .storeCoins(config.total_supply)
-        .storeAddress(config.admin_address)
-        .storeAddress(config.next_admin_address)
-        .storeRef(config.jetton_wallet_code)
-        .storeRef(config.metadata_url)
+        .storeUint(0, 4)
+        .storeCoins(0)
+        .storeAddress(config.owner_address)
+        .storeAddress(config.jetton_master_address)
     .endCell();
 }
 
@@ -26,13 +22,13 @@ export class Wallet implements Contract {
     constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
 
     static createFromAddress(address: Address) {
-        return new wallet(address);
+        return new Wallet(address);
     }
 
     static createFromConfig(config: walletConfig, code: Cell, workchain = 0) {
         const data = walletConfigToCell(config);
         const init = { code, data };
-        return new wallet(contractAddress(workchain, init), init);
+        return new Wallet(contractAddress(workchain, init), init);
     }
 
     async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
