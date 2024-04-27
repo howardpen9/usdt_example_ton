@@ -98,7 +98,9 @@
     ;; see internal TL-B layout in jetton.tlb
     int query_id = in_msg_body~load_query_id();
     int jetton_amount = in_msg_body~load_coins();
+
     balance += jetton_amount;
+    
     slice from_address = in_msg_body~load_msg_addr();
     slice response_address = in_msg_body~load_msg_addr();
     throw_unless(error::not_valid_wallet,

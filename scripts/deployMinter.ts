@@ -7,7 +7,9 @@ import { buildOnchainMetadata } from "./jetton-helpers";
 
 export async function run(provider: NetworkProvider) {
 
-    let nextAdminAddress = Address.parse("UQCJRXURe73Ekjy5DDbWpgkgqnAv5eEns9PD_ueyIQee9zlm");
+    let nextAdminAddress = Address.parse("EQD8TJ8xEWB1SpnRE4d89YO3jl0W0EiBnNS4IBaHaUmdfizE");
+    // let toAddress = Address.parse("EQD8TJ8xEWB1SpnRE4d89YO3jl0W0EiBnNS4IBaHaUmdfizE");
+
     const jettonParams = {
         name: "test USDT",
         description: "This is description for test USDT",
@@ -21,10 +23,9 @@ export async function run(provider: NetworkProvider) {
     const minter = provider.open(
         Minter.createFromConfig(
             {
-                // total_supply: toNano("100000000"),
                 total_supply: 0n,
                 admin_address: provider.sender().address!!,
-                next_admin_address: nextAdminAddress,
+                next_admin_address: treasury,
                 jetton_wallet_code: await compile("jetton-wallet"),
                 metadata_url: jetton_content_metadata,
             },
@@ -33,22 +34,22 @@ export async function run(provider: NetworkProvider) {
     );
 
     let master_msg = beginCell()
-            .storeUint(395134233, 32) // opCode: TokenTransferInternal
-            .storeUint(0, 32) // query_id
-            .storeCoins(toNano('1000000')) // jetton_amount
-            .storeAddress(null) // from_address
-            .storeAddress(null) // response_address
-            .storeCoins(toNano('0.001')) // forward_ton_amount
-            .storeUint(0, 1) // whether forward_payload or not
+            .storeUint(395134233, 32)           // opCode: TokenTransferInternal
+            .storeUint(3333, 32)                   // query_id
+            .storeCoins(toNano('1000000'))      // jetton_amount
+            .storeAddress(nextAdminAddress)     // from_address
+            .storeAddress(treasury)             // response_address
+            .storeCoins(0)                      // forward_ton_amount
+            .storeUint(0, 1)                    // whether forward_payload or not
         .endCell();
 
 
     // await minter.sendDeploy(provider.sender(), toNano('0.05'));
     await minter.sendMint(provider.sender(), {
-        value: toNano('1.5'),
+        value: toNano('10'),
         queryID: 10,
-        toAddress: provider.sender().address!!,
-        tonAmount: toNano('0.5'),
+        toAddress: provider.sender()!!, // the address that receive the new minting JettonToken
+        tonAmount: toNano('0.6'),
         master_msg: master_msg
     } )
 

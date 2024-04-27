@@ -66,10 +66,10 @@ describe('Sample', () => {
                         .endCell();
 
         const deployResult = await minter.sendMint(deployer.getSender(), { // 0x642b7d07
-            value: toNano('20'),
+            value: toNano('5'),
             queryID: 10,
-            toAddress: treasury.address,
-            tonAmount: toNano('0.4'),
+            toAddress: deployer.address,
+            tonAmount: toNano('0.6'),
             master_msg: master_msg
         });
 
