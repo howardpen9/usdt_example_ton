@@ -57,7 +57,7 @@ describe('Sample', () => {
 
         let master_msg = beginCell()
                             .storeUint(395134233, 32) // opCode: TokenTransferInternal / 0x178d4519
-                            .storeUint(0, 32) // query_id
+                            .storeUint(0, 64) // query_id
                             .storeCoins(toNano('1000000')) // jetton_amount
                             .storeAddress(minter.address) // from_address
                             .storeAddress(deployer.address) // response_address
@@ -66,10 +66,10 @@ describe('Sample', () => {
                         .endCell();
 
         const deployResult = await minter.sendMint(deployer.getSender(), { // 0x642b7d07
-            value: toNano('5'),
+            value: toNano('1.5'),
             queryID: 10,
             toAddress: deployer.address,
-            tonAmount: toNano('0.6'),
+            tonAmount: toNano('0.4'),
             master_msg: master_msg
         });
 

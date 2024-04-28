@@ -650,7 +650,6 @@ cell my_code() asm "MYCODE";
 int send_message(cell msg, int mode) impure asm "SENDMSG";
 
 ;; TVM V6 https://github.com/ton-blockchain/ton/blob/testnet/doc/GlobalVersions.md#version-6
-
 int get_compute_fee(int workchain, int gas_used) asm(gas_used workchain) "GETGASFEE";
 int get_storage_fee(int workchain, int seconds, int bits, int cells) asm(cells bits seconds workchain) "GETSTORAGEFEE";
 int get_forward_fee(int workchain, int bits, int cells) asm(cells bits workchain) "GETFORWARDFEE";
