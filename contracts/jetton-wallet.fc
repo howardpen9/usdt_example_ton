@@ -24,7 +24,7 @@
 (int, int, slice, slice) load_data() inline {
     slice ds = get_data().begin_parse();
     var data = (
-        ds~load_uint(STATUS_SIZE), ;; status
+        ds~load_uint(STATUS_SIZE), ;; A
         ds~load_coins(), ;; balance
         ds~load_msg_addr(), ;; owner_address
         ds~load_msg_addr() ;; jetton_master_address
@@ -230,7 +230,7 @@
         return ();
     }
 
-    if (op == op::set_status) {
+    if (op == op::set_status) { ;; 0xeed236d3
         ;; skip the query_id 
         in_msg_body~skip_query_id();
 

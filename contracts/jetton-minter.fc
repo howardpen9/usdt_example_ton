@@ -37,6 +37,8 @@
     );
 }
 
+
+{- Private Functions / Utility -}
 () send_to_jetton_wallet(slice to_address, cell jetton_wallet_code, int ton_amount, cell master_msg, int need_state_init) impure inline {
     raw_reserve(ONE_TON, RESERVE_REGULAR); ;; reserve for storage fees
 
@@ -58,10 +60,11 @@
     send_raw_message(msg.end_cell(), SEND_MODE_PAY_FEES_SEPARATELY | SEND_MODE_BOUNCE_ON_ACTION_FAIL);
 }
 
+{- Main -}
 () recv_internal(int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice in_msg_full_slice = in_msg_full.begin_parse();
+    
     int msg_flags = in_msg_full_slice~load_msg_flags();
-
     if (is_bounced(msg_flags)) {
         in_msg_body~skip_bounced_prefix();
         
