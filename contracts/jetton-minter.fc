@@ -60,10 +60,10 @@
     send_raw_message(msg.end_cell(), SEND_MODE_PAY_FEES_SEPARATELY | SEND_MODE_BOUNCE_ON_ACTION_FAIL);
 }
 
+
 {- Main -}
 () recv_internal(int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice in_msg_full_slice = in_msg_full.begin_parse();
-    
     int msg_flags = in_msg_full_slice~load_msg_flags();
     if (is_bounced(msg_flags)) {
         in_msg_body~skip_bounced_prefix();
@@ -85,6 +85,7 @@
     int fwd_fee = get_original_fwd_fee(MY_WORKCHAIN, fwd_fee_from_in_msg); ;; we use message fwd_fee for estimation of forward_payload costs
 
     (int op, int query_id) = in_msg_body~load_op_and_query_id();
+    
     (int total_supply, slice admin_address, slice next_admin_address, cell jetton_wallet_code, cell metadata_uri) = load_data();
 
     if (op == op::mint) { ;; 0x642b7d07
@@ -261,6 +262,7 @@
 cell build_content_cell(slice metadata_uri) inline {
     cell content_dict = new_dict();
     content_dict~set_token_snake_metadata_entry("uri"H, metadata_uri);
+
     content_dict~set_token_snake_metadata_entry("decimals"H, "6");
     return create_token_onchain_metadata(content_dict);
 }
@@ -272,11 +274,11 @@ cell build_content_cell(slice metadata_uri) inline {
 (int, int, slice, cell, cell) get_jetton_data() method_id {
     (int total_supply, slice admin_address, slice next_admin_address, cell jetton_wallet_code, cell metadata_uri) = load_data();
     return (
-        total_supply, 
-        TRUE, 
-        admin_address, 
-        build_content_cell(metadata_uri.begin_parse()), 
-        jetton_wallet_code
+        total_supply,                                   ;; total_supply
+        TRUE,                                           ;; mintable
+        admin_address,                                  ;; admin_address
+        build_content_cell(metadata_uri.begin_parse()), ;; jetton_content
+        jetton_wallet_code                              ;; jetton_wallet_code
     );
 }
 

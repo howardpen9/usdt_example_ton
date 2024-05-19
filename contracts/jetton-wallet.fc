@@ -11,7 +11,7 @@
 {-
   Storage
 
-  Note, status==0 means unlocked - user can freely transfer and recieve jettons (only admin can burn).
+  Note, status == 0 means unlocked - user can freely transfer and recieve jettons (only admin can burn).
         (status & 1) bit means user can not send jettons
         (status & 2) bit means user can not receive jettons.
   Master (minter) smart-contract able to make outgoing actions (transfer, burn jettons) with any status.
@@ -24,10 +24,10 @@
 (int, int, slice, slice) load_data() inline {
     slice ds = get_data().begin_parse();
     var data = (
-        ds~load_uint(STATUS_SIZE), ;; A
-        ds~load_coins(), ;; balance
-        ds~load_msg_addr(), ;; owner_address
-        ds~load_msg_addr() ;; jetton_master_address
+        ds~load_uint(STATUS_SIZE),  ;; (4 bits)
+        ds~load_coins(),            ;; balance
+        ds~load_msg_addr(),         ;; owner_address
+        ds~load_msg_addr()          ;; jetton_master_address
     );
     ds.end_parse();
     return data;
